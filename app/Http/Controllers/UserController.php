@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function register(Request $request)
     {
-        $secretWord = 'newacc!(@%#&$$66!)@%!@66)#'; // Defina sua palavra secreta aqui
+    $secretWord = env('SECRET_WORD'); // Defina sua palavra secreta aqui
 
         $request->validate([
             'name' => 'required|string|max:255|unique:users',
