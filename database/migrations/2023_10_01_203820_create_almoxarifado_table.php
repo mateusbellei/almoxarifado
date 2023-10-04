@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('produto');
             $table->enum('unidade_medida', ['unidade', 'pacote', 'rolo', 'caixa', 'bloco', 'maço', 'metro', 'frasco', 'tubo', 'galão']);
             $table->integer('estoque');
+            $table->date('validade')->nullable();
             $table->foreignId('updated_by')->constrained('users');
             $table->timestamps();
         });
