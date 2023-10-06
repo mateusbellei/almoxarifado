@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('almoxarifado', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('produto');
             $table->enum('unidade_medida', ['unidade', 'pacote', 'rolo', 'caixa', 'bloco', 'maço', 'metro', 'frasco', 'tubo', 'galão']);
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('almoxarifado');
+        Schema::dropIfExists('products');
     }
 };
