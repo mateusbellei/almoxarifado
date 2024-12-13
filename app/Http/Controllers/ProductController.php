@@ -22,7 +22,10 @@ class ProductController extends Controller
 
         $produtos = $query->paginate($request->get('perPage', 30));
 
-        return response(['produtos' => $produtos]);
+        return response([
+            'produtos' => $produtos,
+            'user_name' => $request->user()->name, // Incluído o nome do usuário autenticado
+        ]);
     }
 
 

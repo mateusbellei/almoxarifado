@@ -9,7 +9,9 @@
     </section>
     <section v-else>
       <div class="px-4 mt-8">
-        {{ products }}
+        <h1>
+          Usuário: <strong class="text-primary">{{ userName }}</strong>
+        </h1>
         <div class="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
           <div class="flex items-center gap-2">
             <UIcon
@@ -134,6 +136,7 @@ definePageMeta({
 });
 
 const products = ref({});
+const userName = ref("");
 const links = ref({});
 const searchQuery = ref("");
 const page = ref(1);
@@ -212,6 +215,8 @@ async function fetchProducts() {
     const data = await response.json();
     products.value = data.produtos.data;
     links.value = data.produtos.links;
+
+    userName.value = data.user_name;
   } catch (error) {
     console.error("Erro ao buscar produtos:", error);
   }
