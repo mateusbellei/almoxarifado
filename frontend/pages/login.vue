@@ -4,7 +4,7 @@
   </Head>
   <Body>
     <section v-if="auth.isLoading">
-      <Spinner v-if="auth.isLoading"/>
+      <Spinner v-if="auth.isLoading" />
     </section>
     <section v-else>
       <div class="h-screen flex items-center justify-center">
@@ -25,9 +25,7 @@
               <UInput v-model="state.password" type="password" />
             </UFormGroup>
             <div class="flex justify-between items-center">
-              <UButton type="submit">
-                Login
-              </UButton>
+              <UButton type="submit"> Login </UButton>
               <div class="flex flex-col space-y-2 text-right text-xs">
                 <NuxtLink to="/register" class="text-primary underline text-xs">
                   Registrar novo usuário
@@ -50,60 +48,59 @@
       </div>
     </section>
   </Body>
-  
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { FormError, FormSubmitEvent } from '@nuxt/ui/dist/runtime/types'
-import { useAuthStore } from '~/stores/authStore' // Importe a store
+import { ref } from "vue";
+import type { FormError, FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
+import { useAuthStore } from "~/stores/authStore"; // Importe a store
 
-const auth = useAuthStore() // Use a store
+const auth = useAuthStore(); // Use a store
 
 definePageMeta({
-  middleware: [
-    'auth',
-  ]
+  middleware: ["auth"],
 });
 
 const state = ref({
   name: undefined,
   password: undefined,
-})
+});
 
-let successMessage = ref('')
-let errorMessage = ref('')
+let successMessage = ref("");
+let errorMessage = ref("");
 
 const validate = (state: any): FormError[] => {
-  const errors = []
-  if (!state.name) errors.push({ path: 'name', message: 'Required' })
-  if (!state.password) errors.push({ path: 'password', message: 'Required' })
-  
-  return errors
-}
+  const errors = [];
+  if (!state.name) errors.push({ path: "name", message: "Required" });
+  if (!state.password) errors.push({ path: "password", message: "Required" });
+
+  return errors;
+};
 
 async function submit(event: FormSubmitEvent<any>) {
   try {
-    const { data, error }: { data: any, error: any } = await useFetch(`${import.meta.env.VITE_BASE_API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(event.data)
-    })
+    const { data, error }: { data: any; error: any } = await useFetch(
+      `${import.meta.env.VITE_BASE_API_URL}/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(event.data),
+      }
+    );
 
     if (data.value) {
-      auth.setToken(data.value.token) // Use a ação setToken da store
-      successMessage.value = data.value.message
-      errorMessage.value = ''
-      return navigateTo('/estoque')
+      auth.setToken(data.value.token); // Use a ação setToken da store
+      successMessage.value = data.value.message;
+      errorMessage.value = "";
+      return navigateTo("dashboard/estoque");
     } else if (error) {
-      errorMessage.value = error.value.data.message
-      successMessage.value = ''
+      errorMessage.value = error.value.data.message;
+      successMessage.value = "";
     }
-
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 </script>
