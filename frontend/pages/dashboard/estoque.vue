@@ -64,7 +64,7 @@
           </UButton>
         </div>
         <div class="flex flex-col w-full">
-          <div class="flex border-b-[1px] mt-4 rounded-lg">
+          <div class="flex border-b-[1px] dark:border-gray-700 mt-4 rounded-lg">
             <div class="px-4 py-2 w-1/5 font-bold">Nome</div>
             <div class="px-4 py-2 w-1/5 font-bold">Unidade Medida</div>
             <div class="px-4 py-2 w-1/5 font-bold">Estoque</div>
@@ -72,7 +72,7 @@
             <div class="px-4 py-2 w-1/5 font-bold">Ações</div>
           </div>
           <div
-            class="flex border-b-[1px]"
+            class="flex border-b-[1px] dark:border-gray-700"
             v-for="product in products"
             :key="product.id"
           >
