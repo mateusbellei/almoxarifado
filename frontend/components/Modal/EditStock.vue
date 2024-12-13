@@ -26,6 +26,18 @@
               <h1 class="text-primary">Validade Atual:</h1>
               <h1>{{ product ? product.validade : "Loading..." }}</h1>
             </div>
+            <div class="flex gap-2">
+              <h1 class="text-primary">Ultima atualização:</h1>
+              <h1>
+                {{ product ? `${product.updated_at} ` : "Loading..." }}
+              </h1>
+            </div>
+            <div class="flex gap-2">
+              <h1 class="text-primary">Profissional:</h1>
+              <h1>
+                {{ product ? `${product.updated_by}` : "Loading..." }}
+              </h1>
+            </div>
           </div>
 
           <!-- Campos para edição -->
@@ -37,6 +49,12 @@
           </UFormGroup>
           <UFormGroup label="Nova Validade" name="validade">
             <UInput v-model="state.validade" type="date" />
+          </UFormGroup>
+          <UFormGroup label="Atualizado por" name="updated_by">
+            <UInput
+              v-model="state.updated_by"
+              placeholder="Digite o seu nome..."
+            />
           </UFormGroup>
           <div class="flex justify-between space-x-1">
             <UButton color="red" label="Cancelar" @click="closeModal" />
@@ -83,6 +101,7 @@ const state = ref({
   entrada: undefined,
   saida: undefined,
   validade: new Date().toISOString().substr(0, 10), // Default to current date
+  updated_by: "",
 });
 
 const successMessage = ref("");

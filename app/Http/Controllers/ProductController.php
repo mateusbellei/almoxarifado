@@ -10,6 +10,12 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuário não autenticado'], 401);
+        }
+
         $query = Product::where('user_id', $request->user()->id); // Produtos do usuário autenticado
 
         if ($request->has('name')) {
@@ -28,15 +34,8 @@ class ProductController extends Controller
         ]);
     }
 
-
     public function showById(Product $product)
     {
-        $product->load('updatedByUser'); // Carrega o relacionamento com o usuário que atualizou.
-    
-        // Substituir o ID pelo nome do usuário
-        $product->updated_by = $product->updatedByUser->name;
-        unset($product->updatedByUser); // Remova a chave 'updatedByUser' se você não quiser retornar os detalhes completos do usuário.
-    
         return response(['produto' => $product]);
     }
 
@@ -55,7 +54,7 @@ class ProductController extends Controller
             'unidade_medida' => $request->unidade_medida,
             'estoque' => $request->estoque,
             'validade' => $request->validade,
-            'updated_by' => $request->user()->id,
+            'updated_by' => $request->updated_by
         ]);
 
         return response([
@@ -85,7 +84,7 @@ class ProductController extends Controller
         }
 
         $product->validade = $request->validade;
-        $product->updated_by = $request->user()->id;
+        $product->updated_by = $request->updated_by;
         $product->save();
 
         return response(['product' => $product]);

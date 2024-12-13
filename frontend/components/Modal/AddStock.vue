@@ -23,6 +23,13 @@
           <UFormGroup label="Validade" name="validade">
             <UInput v-model="state.validade" type="date" />
           </UFormGroup>
+          <UFormGroup label="Atualizado por" name="updated_by">
+            <UInput
+              v-model="state.updated_by"
+              placeholder="Digite o seu nome..."
+            />
+          </UFormGroup>
+
           <div class="flex justify-between space-x-1">
             <UButton color="red" label="Cancelar" @click="closeModal" />
             <UButton label="Salvar" type="submit" />
@@ -62,7 +69,8 @@ const state = ref({
   produto: "",
   unidade_medida: undefined,
   estoque: undefined,
-  validade: undefined,
+  validade: new Date().toISOString().substr(0, 10),
+  updated_by: "",
 });
 
 const successMessage = ref("");
@@ -102,7 +110,11 @@ const validate = (state: any): FormError[] => {
   if (!state.unidade_medida)
     errors.push({ path: "unidade_medida", message: "Required" });
   if (!state.estoque) errors.push({ path: "estoque", message: "Required" });
-  if (!state.validade) errors.push({ path: "estoque", message: "Required" });
+  if (!state.validade || new Date(state.validade) < new Date())
+    errors.push({ path: "validade", message: "Data inválida" });
+  if (!state.updated_by)
+    errors.push({ path: "updated_by", message: "Required" });
+
   if (state.estoque < 0)
     errors.push({ path: "estoque", message: "Não pode ser negativo" });
   return errors;
@@ -132,7 +144,7 @@ async function submit(event: FormSubmitEvent<any>) {
       state.value.produto = "";
       state.value.unidade_medida = undefined;
       state.value.estoque = undefined;
-      state.value.validade = undefined;
+      state.value.validade = new Date().toISOString().substr(0, 10);
       successMessage.value = data.value.message;
       errorMessage.value = "";
       emit("product-added");
