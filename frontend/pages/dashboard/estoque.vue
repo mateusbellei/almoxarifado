@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <Title>Estoque</Title>
+    <Title>Almoxarifado</Title>
   </Head>
 
   <Body>
