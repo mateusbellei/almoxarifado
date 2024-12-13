@@ -33,7 +33,7 @@
               </h1>
             </div>
             <div class="flex gap-2">
-              <h1 class="text-primary">Profissional:</h1>
+              <h1 class="text-primary">Atualizado por:</h1>
               <h1>
                 {{ product ? `${product.updated_by}` : "Loading..." }}
               </h1>
@@ -98,11 +98,21 @@ console.log("props product", props.product);
 
 // State
 const state = ref({
-  entrada: undefined,
-  saida: undefined,
+  entrada: 0,
+  saida: 0,
   validade: new Date().toISOString().substr(0, 10), // Default to current date
   updated_by: "",
 });
+
+watch(
+  () => props.product,
+  (newProduct) => {
+    if (newProduct) {
+      state.value.validade = newProduct.validade;
+      state.value.updated_by = newProduct.updated_by;
+    }
+  }
+);
 
 const successMessage = ref("");
 const errorMessage = ref("");
@@ -126,12 +136,15 @@ const closeModal = () => {
 
 const validate = (state: any): FormError[] => {
   const errors = [];
-  if (!state.entrada && !state.saida) {
+  if (state.entrada === null || state.saida === null) {
     errors.push({ path: "entrada", message: "Entrada ou saída é necessária" });
   }
 
   if (!state.validade || new Date(state.validade) < new Date())
     errors.push({ path: "validade", message: "Data inválida" });
+
+  if (!state.updated_by)
+    errors.push({ path: "updated_by", message: "Required" });
 
   return errors;
 };
@@ -155,8 +168,8 @@ async function submit(event: FormSubmitEvent<any>) {
     if (data) {
       successMessage.value = "Estoque atualizado com sucesso!";
       errorMessage.value = "";
-      state.value.entrada = undefined;
-      state.value.saida = undefined;
+      state.value.entrada = 0;
+      state.value.saida = 0;
       emit("stock-updated");
       successMessage.value = "";
       setTimeout(() => {
