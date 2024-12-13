@@ -10,13 +10,18 @@
     <section v-else>
       <div class="px-4 mt-8">
         <div class="flex justify-between">
-          <div>
-            <input
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-heroicons-magnifying-glass"
+              class="w-6 h-6 hover:bg-blue-600 cursor-pointer"
+              @click="fetchProducts"
+            />
+            <UInput
               v-model="searchQuery"
-              @input="fetchProducts"
+              @keyup.enter="fetchProducts"
               placeholder="Pesquisar produto..."
+              class="lg:w-96"
               type="text"
-              class="px-4 py-2 border rounded-md"
             />
           </div>
           <UButton
@@ -27,16 +32,20 @@
           </UButton>
         </div>
         <div class="flex flex-col w-full">
-          <div class="flex border-[1px] mt-4 rounded-lg">
-            <div class="px-4 py-2 w-1/6 font-bold">Nome</div>
-            <div class="px-4 py-2 w-1/6 font-bold">Unidade Medida</div>
-            <div class="px-4 py-2 w-1/6 font-bold">Estoque</div>
-            <div class="px-4 py-2 w-1/6 font-bold">Validade</div>
-            <div class="px-4 py-2 w-1/6 font-bold">Ações</div>
+          <div class="flex border-b-[1px] mt-4 rounded-lg">
+            <div class="px-4 py-2 w-1/5 font-bold">Nome</div>
+            <div class="px-4 py-2 w-1/5 font-bold">Unidade Medida</div>
+            <div class="px-4 py-2 w-1/5 font-bold">Estoque</div>
+            <div class="px-4 py-2 w-1/5 font-bold">Validade</div>
+            <div class="px-4 py-2 w-1/5 font-bold">Ações</div>
           </div>
-          <div class="flex" v-for="product in products" :key="product.id">
-            <div class="px-4 py-2 w-1/6">{{ product.produto }}</div>
-            <div class="px-4 py-2 w-1/6">
+          <div
+            class="flex border-b-[1px]"
+            v-for="product in products"
+            :key="product.id"
+          >
+            <div class="px-4 py-2 w-1/5">{{ product.produto }}</div>
+            <div class="px-4 py-2 w-1/5">
               {{
                 product
                   ? product.unidade_medida.charAt(0).toUpperCase() +
@@ -44,11 +53,11 @@
                   : "Loading..."
               }}
             </div>
-            <div class="px-4 py-2 w-1/6">{{ product.estoque }}</div>
-            <div class="px-4 py-2 w-1/6">
+            <div class="px-4 py-2 w-1/5">{{ product.estoque }}</div>
+            <div class="px-4 py-2 w-1/5">
               {{ product.validade }}
             </div>
-            <div class="px-4 py-2 w-1/6 flex space-x-2">
+            <div class="px-4 py-2 w-1/5 flex space-x-2">
               <!-- Adicionada coluna Ações -->
               <UButton @click="openEditModal(product)">Editar</UButton>
               <UButton color="red" @click="deleteProduct(product.id)"
@@ -57,7 +66,7 @@
             </div>
           </div>
         </div>
-        <div class="mt-4 flex justify-end space-x-1">
+        <div class="mt-4 flex items-center justify-end space-x-1">
           <UButton
             v-for="link in links"
             :key="link.label"
@@ -179,7 +188,7 @@ async function fetchProducts() {
 
 fetchProducts();
 
-watch([searchQuery, page], fetchProducts);
+watch([page], fetchProducts);
 watch(selectedProduct, (newVal) => {
   if (newVal) {
     isEditOpen.value = true;
