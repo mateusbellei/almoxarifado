@@ -10,7 +10,7 @@ definePageMeta({
 
 <template>
   <Head>
-    <Title>Nurse - Estoque</Title>
+    <Title>Dashboard</Title>
   </Head>
 
   <Body>

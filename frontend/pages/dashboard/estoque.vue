@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <Title>Nurse - Estoque</Title>
+    <Title>Estoque</Title>
   </Head>
 
   <Body>
