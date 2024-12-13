@@ -50,6 +50,7 @@ import type { FormError, FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 import { useAuthStore } from "~/stores/authStore";
 
 const auth = useAuthStore();
+const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -122,6 +123,9 @@ async function submit(event: FormSubmitEvent<any>) {
 
     if (data.value) {
       console.log(data.value);
+      toast.add({
+        title: `${state.value.estoque} ${state.value.unidade_medida} de "${state.value.produto}" com validade de ${state.value.validade} adicionado com sucesso!"`,
+      });
       state.value.produto = "";
       state.value.unidade_medida = undefined;
       state.value.estoque = undefined;
