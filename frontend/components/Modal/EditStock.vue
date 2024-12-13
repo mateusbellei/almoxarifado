@@ -6,24 +6,25 @@
           <h1 class="text-primary font-medium">Editar Estoque</h1>
         </template>
 
-        <UForm class="space-y-4" :validate="validate" :state="state" @submit="submit">
+        <UForm
+          class="space-y-4"
+          :validate="validate"
+          :state="state"
+          @submit="submit"
+        >
           <!-- Informações atuais para visualização -->
           <div class="space-y-2">
             <div class="flex gap-2">
               <h1 class="text-primary">Produto Atual:</h1>
-              <h1>{{ product ? product.produto : 'Loading...' }}</h1>
+              <h1>{{ product ? product.produto : "Loading..." }}</h1>
             </div>
             <div class="flex gap-2">
               <h1 class="text-primary">Estoque Atual:</h1>
-              <h1>{{ product ? product.estoque : 'Loading...' }}</h1>
+              <h1>{{ product ? product.estoque : "Loading..." }}</h1>
             </div>
             <div class="flex gap-2">
               <h1 class="text-primary">Validade Atual:</h1>
-              <h1>{{ product ? product.validade : 'Loading...' }}</h1>
-            </div>
-            <div class="flex gap-2">
-              <h1 class="text-primary">Última Atualização Por:</h1>
-              <h1>{{ product ? product.updated_by : 'Loading...' }}</h1>
+              <h1>{{ product ? product.validade : "Loading..." }}</h1>
             </div>
           </div>
 
@@ -59,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
-import type { FormError, FormSubmitEvent } from '@nuxt/ui/dist/runtime/types';
+import { ref, watch, defineProps, defineEmits } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import type { FormError, FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 
 const auth = useAuthStore();
 
@@ -71,12 +72,11 @@ const props = defineProps({
   product: {
     type: Object,
     required: true,
-    default: () => ({ produto: '', estoque: '', validade: '', updated_by: '' })
-  }
+    default: () => ({ produto: "", estoque: "", validade: "", updated_by: "" }),
+  },
 });
 
-console.log('props product', props.product)
-
+console.log("props product", props.product);
 
 // State
 const state = ref({
@@ -85,12 +85,15 @@ const state = ref({
   validade: new Date().toISOString().substr(0, 10), // Default to current date
 });
 
-const successMessage = ref('');
-const errorMessage = ref('');
+const successMessage = ref("");
+const errorMessage = ref("");
 
 // Modal control
 const localIsOpen = ref(props.modelValue);
-watch(() => props.modelValue, newVal => localIsOpen.value = newVal);
+watch(
+  () => props.modelValue,
+  (newVal) => (localIsOpen.value = newVal)
+);
 
 // Emits
 const emit = defineEmits(["update:modelValue", "stock-updated", "close"]);
@@ -100,44 +103,50 @@ const updateModelValue = (value: any) => emit("update:modelValue", value);
 const closeModal = () => {
   updateModelValue(false);
   emit("close");
-}
+};
 
 const validate = (state: any): FormError[] => {
   const errors = [];
   if (!state.entrada && !state.saida) {
-    errors.push({ path: 'entrada', message: 'Entrada ou saída é necessária' });
+    errors.push({ path: "entrada", message: "Entrada ou saída é necessária" });
   }
-  
+
   return errors;
-}
+};
 
 async function submit(event: FormSubmitEvent<any>) {
   try {
-    const { data, error }: { data: any, error: any } = await useFetch(`${import.meta.env.VITE_BASE_API_URL}/product/${props.product.id}/update-estoque`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      },
-      body: JSON.stringify(event.data)
-    });
+    const { data, error }: { data: any; error: any } = await useFetch(
+      `${import.meta.env.VITE_BASE_API_URL}/product/${
+        props.product.id
+      }/update-estoque`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        body: JSON.stringify(event.data),
+      }
+    );
 
     if (data) {
-      successMessage.value = 'Estoque atualizado com sucesso!';
-      errorMessage.value = '';
+      successMessage.value = "Estoque atualizado com sucesso!";
+      errorMessage.value = "";
       state.value.entrada = undefined;
       state.value.saida = undefined;
       emit("stock-updated");
-      successMessage.value = '';
+      successMessage.value = "";
       setTimeout(() => {
         closeModal();
       }, 1000);
     } else if (error) {
-      errorMessage.value = error.value.data.message || 'Erro ao atualizar o estoque';
-      successMessage.value = '';
+      errorMessage.value =
+        error.value.data.message || "Erro ao atualizar o estoque";
+      successMessage.value = "";
     }
   } catch (error) {
-    errorMessage.value = 'Erro ao atualizar o estoque';
+    errorMessage.value = "Erro ao atualizar o estoque";
   }
 }
 
