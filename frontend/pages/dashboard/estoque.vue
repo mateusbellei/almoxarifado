@@ -9,7 +9,8 @@
     </section>
     <section v-else>
       <div class="px-4 mt-8">
-        <div class="flex justify-between">
+        {{ products }}
+        <div class="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
           <div class="flex items-center gap-2">
             <UIcon
               name="i-heroicons-magnifying-glass"
@@ -23,6 +24,35 @@
               class="lg:w-96"
               type="text"
             />
+          </div>
+          <div class="flex items-center gap-2 mt-4">
+            <div>
+              <p class="text-xs">Ordenar Por:</p>
+              <USelectMenu
+                v-model="sortOption"
+                :options="[
+                  { value: 'produto', label: 'Nome' },
+                  { value: 'estoque', label: 'Estoque' },
+                  { value: 'validade', label: 'Validade' },
+                ]"
+                placeholder="Ordenar por..."
+                class="w-48"
+                @change="updateSortOption"
+              />
+            </div>
+            <div>
+              <p class="text-xs">Ordem:</p>
+              <USelectMenu
+                v-model="sortOrder"
+                :options="[
+                  { value: 'asc', label: 'Crescente' },
+                  { value: 'desc', label: 'Decrescente' },
+                ]"
+                placeholder="Ordem..."
+                class="w-48"
+                @change="updateSortOrder"
+              />
+            </div>
           </div>
           <UButton
             @click="openModal"
@@ -109,6 +139,9 @@ const searchQuery = ref("");
 const page = ref(1);
 const pageCount = ref(30);
 
+const sortOption = ref("produto"); // Opção padrão: Nome
+const sortOrder = ref("asc"); // Ordem padrão: Crescente
+
 const isOpen = ref(false);
 const isEditOpen = ref(false);
 
@@ -166,10 +199,10 @@ async function fetchProducts() {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/product?name=${encodeURIComponent(
         searchQuery.value
-      )}&page=${page.value}&perPage=${pageCount.value}`,
-      {
-        headers: headers,
-      }
+      )}&page=${page.value}&perPage=${pageCount.value}&sort=${
+        sortOption.value
+      }&order=${sortOrder.value}`,
+      { headers }
     );
 
     if (!response.ok) {
@@ -179,8 +212,6 @@ async function fetchProducts() {
     const data = await response.json();
     products.value = data.produtos.data;
     links.value = data.produtos.links;
-
-    console.log("produtos", data.produtos.data);
   } catch (error) {
     console.error("Erro ao buscar produtos:", error);
   }
@@ -194,6 +225,9 @@ watch(selectedProduct, (newVal) => {
     isEditOpen.value = true;
   }
 });
+watch([sortOption, sortOrder], () => {
+  fetchProducts();
+});
 
 const changePage = (url) => {
   if (!url || typeof url !== "string" || !url.startsWith("http")) return;
@@ -202,8 +236,19 @@ const changePage = (url) => {
   const newPage = urlObj.searchParams.get("page");
   if (newPage) {
     page.value = newPage;
+
+    // Recarregar produtos mantendo a ordenação
+    fetchProducts();
   }
 };
+
+function updateSortOption(option) {
+  sortOption.value = option.value; // Extrai apenas o campo 'value'
+}
+
+function updateSortOrder(option) {
+  sortOrder.value = option.value; // Extrai apenas o campo 'value'
+}
 
 async function deleteProduct(productId) {
   const confirmation = window.confirm(

@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('produto');
             $table->enum('unidade_medida', ['unidade', 'pacote', 'rolo', 'caixa', 'bloco', 'maço', 'metro', 'frasco', 'tubo', 'galão']);
             $table->integer('estoque');
             $table->date('validade')->nullable();
-            $table->foreignId('updated_by')->constrained('users');
+            $table->string('updated_by');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

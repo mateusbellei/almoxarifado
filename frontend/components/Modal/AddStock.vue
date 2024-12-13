@@ -102,6 +102,7 @@ const validate = (state: any): FormError[] => {
   if (!state.unidade_medida)
     errors.push({ path: "unidade_medida", message: "Required" });
   if (!state.estoque) errors.push({ path: "estoque", message: "Required" });
+  if (!state.validade) errors.push({ path: "estoque", message: "Required" });
   if (state.estoque < 0)
     errors.push({ path: "estoque", message: "Não pode ser negativo" });
   return errors;
@@ -124,8 +125,10 @@ async function submit(event: FormSubmitEvent<any>) {
     if (data.value) {
       console.log(data.value);
       toast.add({
-        title: `${state.value.estoque} ${state.value.unidade_medida} de "${state.value.produto}" com validade de ${state.value.validade} adicionado com sucesso!"`,
+        title: `Produto "${state.value.produto}" adicionado com sucesso!`,
+        description: `Estoque: ${state.value.estoque}, Unidade: ${state.value.unidade_medida}, Validade: ${state.value.validade}`,
       });
+
       state.value.produto = "";
       state.value.unidade_medida = undefined;
       state.value.estoque = undefined;

@@ -111,6 +111,9 @@ const validate = (state: any): FormError[] => {
     errors.push({ path: "entrada", message: "Entrada ou saída é necessária" });
   }
 
+  if (!state.validade || new Date(state.validade) < new Date())
+    errors.push({ path: "validade", message: "Data inválida" });
+
   return errors;
 };
 

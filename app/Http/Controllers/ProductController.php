@@ -10,40 +10,21 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('updatedByUser'); // Carregar o relacionamento com o usuário que atualizou.
+        $query = Product::where('user_id', $request->user()->id); // Produtos do usuário autenticado
 
         if ($request->has('name')) {
             $query->where('produto', 'like', '%' . $request->name . '%');
         }
 
+        if ($request->has('sort')) {
+            $query->orderBy($request->get('sort'), $request->get('order', 'asc')); // Ordenação dinâmica
+        }
+
         $produtos = $query->paginate($request->get('perPage', 30));
 
-        // Ajustar os links
-        $links = $produtos->toArray()['links'];
-        
-        // Ajustar o link "Previous" na primeira página
-        if ($produtos->currentPage() == 1 && !$links[0]['url']) {
-            $links[0]['url'] = $produtos->url(1);
-        }
-
-        // Ajustar o link "Next" na última página
-        if ($produtos->currentPage() == $produtos->lastPage() && !$links[count($links)-1]['url']) {
-            $links[count($links)-1]['url'] = $produtos->url($produtos->lastPage());
-        }
-
-        // Substituir os links originais
-        $produtosArr = $produtos->toArray();
-
-        // Substituir o ID pelo nome do usuário em cada produto
-        foreach ($produtosArr['data'] as &$produto) {
-            $produto['updated_by'] = $produto['updated_by_user']['name'];
-            unset($produto['updated_by_user']); // Remova a chave 'updated_by_user' se você não quiser retornar os detalhes completos do usuário.
-        }
-
-        $produtosArr['links'] = $links;
-
-        return response(['produtos' => $produtosArr]);
+        return response(['produtos' => $produtos]);
     }
+
 
     public function showById(Product $product)
     {
@@ -62,18 +43,20 @@ class ProductController extends Controller
             'produto' => 'required|string|max:255|unique:products',
             'unidade_medida' => 'required|in:Unidade,Pacote,Rolo,Caixa,Bloco,Maço,Metro,Frasco,Tubo,Galão',
             'estoque' => 'required|numeric',
+            'validade' => 'required|date',
         ]);
 
-        $product = new Product();
-        $product->produto = $request->produto;
-        $product->unidade_medida = $request->unidade_medida;
-        $product->estoque = $request->estoque;
-        $product->validade = $request->validade;
-        $product->updated_by = $request->user()->id; // assumindo que o usuário está autenticado
-        $product->save();
+        $product = Product::create([
+            'user_id' => $request->user()->id, // Associa ao usuário autenticado
+            'produto' => $request->produto,
+            'unidade_medida' => $request->unidade_medida,
+            'estoque' => $request->estoque,
+            'validade' => $request->validade,
+            'updated_by' => $request->user()->id,
+        ]);
 
         return response([
-            'produto' => $product, 
+            'produto' => $product,
             'message' => 'Produto registrado com sucesso!'
         ], 201);
     }
